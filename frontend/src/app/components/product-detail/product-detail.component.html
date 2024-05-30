@@ -1,0 +1,25 @@
+<main>
+  <section class="product-section">
+    <img [src]="bike.imagen" [alt]="bike.marca"/>
+    <div class="detail-section">
+      <h1>{{ bike.marca }} {{bike.modelo}}</h1>
+      <h2 class="price">{{ bike.precio | currency : "$" : "symbol" : "1.2-2" }}</h2>
+      <div>
+        <h2>Detalles</h2>
+        <ul>
+          <li>Material: {{ bike.material }}</li>
+          <li>Marca: {{ bike.marca }}</li>
+          <li>Estilo: {{ bike.estilo }}</li>
+          <li>Color: {{ bike.color }}</li>
+          <li>Rodado: {{ bike.rodado }}</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Descripción</h2>
+        <p>
+          {{ bike.detalle }}
+        </p>
+      </div>
+    </div>
+  </section>
+</main>

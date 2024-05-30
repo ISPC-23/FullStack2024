@@ -5,7 +5,8 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login-page',
@@ -16,42 +17,48 @@ import { RouterLink } from '@angular/router';
 })
 export class LoginPageComponent {
   form!: FormGroup;
-  contador: number = 0;
-  usuarioAdmin: string = 'admin@admin.com';
-  passAdmin: string = 'admin';
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.form = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email], []],
+      username: ['', [Validators.required, Validators.email], []],
       password: ['', [Validators.required], []],
     });
   }
 
-  get Password() {
+  get username() {
+    return this.form.get('username');
+  }
+
+  get password() {
     return this.form.get('password');
   }
 
-  get Email() {
-    return this.form.get('email');
-  }
-
   validarUsuario() {
-    if (this.form.value.email != '' && this.form.value.password != '') {
-      this.contador = this.contador + 1;
-      if (this.contador < 3) {
-        if (this.form.value.email == this.usuarioAdmin) {
-          if (this.form.value.password == this.passAdmin) {
-            alert('Bienvenido ' + this.form.value.email);
-            window.location.href = '../index.html';
-          } else {
-            alert('Contraseña incorrecta');
+    if (this.form.value.username != '' && this.form.value.password != '') {
+      const logUser = {
+        username: this.form.value.username,
+        password: this.form.value.password,
+      };
+
+      this.authService.login(logUser).subscribe({
+        next: (res) => {
+          if (res.token) {
+            sessionStorage.setItem('token', res.token);
+            console.log(res);
+            sessionStorage.setItem('isAdmin', res.is_staff);
+            alert('Usuario logueado');
+            this.router.navigate(['/']);
           }
-        } else {
-          alert('Correo electrónico incorrecto');
-        }
-      } else {
-        alert('Usuario bloqueado');
-      }
+        },
+        error: (error) => {
+          alert('Error al iniciar sesión, por favor intenta de nuevo');
+          console.error(error);
+        },
+      });
     }
   }
 }
